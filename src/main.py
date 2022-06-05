@@ -3,7 +3,7 @@ import numpy as np
 # TODO: assuming package install. Check FASSE env
 
 # defining constants
-PT_ID_str = 'QID'
+PT_ID_STR = 'QID'
 PT_TABLE = 'medpar'  # TODO: check name
 
 
@@ -26,9 +26,9 @@ def first_ADATE(patients):
     # disctinct on selects the first occurence, order by ADATE to select the first admission date
     # https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-select-distinct/
     sql = f"""
-    SELECT DISTINCT ON ({PT_ID_str}) {PT_ID_str} FROM {PT_TABLE} 
-          WHERE {PT_ID_str} IN {pt_sql}
-          ORDER BY {PT_ID_str}, ADATE;
+    SELECT DISTINCT ON ({PT_ID_STR}) {PT_ID_STR} FROM {PT_TABLE} 
+          WHERE {PT_ID_STR} IN {pt_sql}
+          ORDER BY {PT_ID_STR}, ADATE;
     """
     sql = sql_check(sql)
     print(sql)
