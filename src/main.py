@@ -9,6 +9,8 @@ PT_TABLE = 'medpar'  # TODO: check name
 
 def first_ADATE(patients):
     """
+    Only true if date is first admission, false otherwise.
+    all pt hospitalized for DISEASE, whether the pt was hospitalitzed first time
     fetches the first admission dates of patients
     :param patients: a list of patients to fetch from
     :return: sql: query to fetch each patient's admission date
@@ -34,6 +36,9 @@ def first_ADATE(patients):
     print(sql)
     return sql
 
+
+def pull_request():
+    print("please only push with pull requests")
 
 def sql_check(sql):
     """
