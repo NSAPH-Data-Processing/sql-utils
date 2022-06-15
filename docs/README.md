@@ -10,25 +10,16 @@ However, `mermaid` sometimes cannot 100% recreate the desired graphs. Work-aroun
 A sample recreation of the data processing flow enclosed in this directory:
 
 ```mermaid
-flowchart LR
-
+flowchart TB
     subgraph ID100[ ]
-        direction TB
-        ID1[BRFSS 2014 \n n=464,664]-->ID2[Veteran \n n=61,120]
-        ID2-->ID3[Known diabetes status \n n=62,104]
-        ID3-->ID4[Known asthma status \n n=61,833]
-        ID4-->ID5[Known average sleep per night \n n=61,08]
+        ID1[BRFSS 2014 \n n=464,664]==>ID2[Veteran \n n=61,120]
+        ID2==>ID3[Known diabetes status \n n=62,104]
+        ID3==>ID4[Known asthma status \n n=61,833]
+        ID4==>ID5[Known average sleep per night \n n=61,08]
     end
-    
-    subgraph ID101[ ]
-        direction LR
-        ID10[Not a Veteran \n n=402,544]
-        ID11[No information \n on diabetes status \n n=106]
-        ID12[No asthma \nstatus \n n=181]
-        ID13[No information \n average sleep \n per night \n n=752]
-    end
-    
+ID1-->ID10[Not a Veteran \n n=402,544]
+ID2-->ID11[No information \n on diabetes status \n n=106]
+ID3-->ID12[No asthma \nstatus \n n=181]
+ID4-->ID13[No information \n average sleep \n per night \n n=752]
 
-    
-    ID100-->|Exclude|ID101
 ```
