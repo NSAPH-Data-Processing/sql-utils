@@ -9,4 +9,10 @@ References: https://www.postgresqltutorial.com/postgresql-python/
 ```angular2html
 src
     - main.py
+    - icd.R
+    - icd_codes.json
+    - icd_codes.txt
+
+docs
+    - README.md
 ```
