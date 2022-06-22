@@ -2,6 +2,24 @@ import numpy as np
 # import pandas as pd
 import re
 
+
+def main():
+    # DESIRED_ICD = "296.2x"
+    # print("Desired ICD:", DESIRED_ICD)
+    # rx = create_regex_icd9(DESIRED_ICD)
+    #
+    # icd_checklist = ['296.29', '296.22', '296.233', '393.29', '343.33']
+    # # GT: T, T, F, F, F
+    # for icd in icd_checklist:
+    #     icd9_finder(icd, rx)
+    return
+
+"""
+296.2x, 296.3x, 300.4x, 309.0x, 309.1x, 311.xx
+"""
+
+
+#######backburner##########
 # https://stackoverflow.com/questions/71410627/python-icd-10-regexv
 
 def icd9_checker(string):
@@ -60,23 +78,3 @@ def icd9_finder(string, icd_rx):
         print(f'{string} is a valid psychiatric diagnosis !')
     else:
         print(f'{string} is NOT a valid psychiatric diagnosis !')
-
-def main():
-    DESIRED_ICD = "296.2x"
-    print("Desired ICD:", DESIRED_ICD)
-    rx = create_regex_icd9(DESIRED_ICD)
-
-    icd_checklist = ['296.29', '296.22', '296.233', '393.29', '343.33']
-    # GT: T, T, F, F, F
-    for icd in icd_checklist:
-        icd9_finder(icd, rx)
-
-# icd9_finder("296.22", "296.2x")
-
-
-if __name__ == "__main__":
-    main()
-
-"""
-296.2x, 296.3x, 300.4x, 309.0x, 309.1x, 311.xx
-"""
