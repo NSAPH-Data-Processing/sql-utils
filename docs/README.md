@@ -28,15 +28,15 @@ ID4-->ID13[No information \n average sleep \n per night \n n=752]
 ```mermaid
 flowchart LR
     %% creating nodes
-    id1([Data \n Integration])
+    id1([Data\n Integration])
     
     %% linking nodes
-    id2((External \n Applications))-->id1
-    id3[(\nData Services)]-->id1
-    id4((Enterprise \n Applications))-->id1
-    id5(Unstructured Files)-->id1
-    id6[[Cloud Applications \n and Databases]]-->id1
+    id2(MBSF -\n enrollment)-->id1
+    id3(MedPar -\n hospitalization)-->id1
+    id4((Air Pollution))-->id1
+    id5[(Census \n& BRFSS)]-->id1
+    id6[[GridMET -\n meteorological]]-->id1
     
     %% integration to warehouse
-    id1-->id7[(\n\n Enterprise Data \n Warehouse \n\n)]
+    id1-->id7[(\n\n Analytic Data \n\n)]
 ```
