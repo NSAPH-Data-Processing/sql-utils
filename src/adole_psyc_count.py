@@ -119,8 +119,8 @@ def get_diag_vs_all_enroll(year, age_low, age_high, diagnoses):
     """
     returns a table containing columns: 1)% of diagnoses divided by all enrolls 2) diagnoses count 3) total enrollee count 4) zip code
     :param year: the year of Medicaid to query
-    :param age_low: lower bound of the population age
-    :param age_high: upper bound of the population age
+    :param age_low: lower bound of the population age, inclusive
+    :param age_high: upper bound of the population age, inclusive
     :param diagnoses: a list of ICD codes to match the Medicaid diagnoses
     :return: sql_query: the PostgreSQL statement to pass into the engine
     """
@@ -136,7 +136,7 @@ def get_diag_vs_all_enroll(year, age_low, age_high, diagnoses):
       (
       SELECT COUNT(bene_id) AS enroll_count, zip  FROM
         (
-        SELECT enroll.bene_id, dob, year, zip, DATE_PART('year', make_date({year}, 12, 31)) - DATE_PART('year', dob) AS age FROM medicaid.enrollments as enroll
+        SELECT enroll.bene_id, dob, year, zip, {year} - EXTRACT(YEAR FROM dob) AS age FROM medicaid.enrollments as enroll
         INNER JOIN medicaid.beneficiaries AS bene ON enroll.bene_id = bene.bene_id 
         WHERE enroll.year = {year}-- want the year patients is admitted and enrolled for accurate zipcode
           ) AS bene_age -- calculates age
@@ -147,7 +147,11 @@ def get_diag_vs_all_enroll(year, age_low, age_high, diagnoses):
       LEFT JOIN (
         SELECT COUNT(bene_id) AS diag_count, zip  FROM
           (
-        SELECT ad.year, ad.bene_id, admission_date, dob, diagnosis, zip, DATE_PART('year', admission_date) - DATE_PART('year', dob) AS age FROM medicaid.admissions AS ad
+          
+          /*
+          Even though admission date and dob can be used to calculate the exact age, using YEAR(dob) - YEAR(of interest) for consistency.
+          */
+        SELECT ad.year, ad.bene_id, admission_date, dob, diagnosis, zip, {year} - EXTRACT(YEAR FROM dob) AS age FROM medicaid.admissions AS ad
         INNER JOIN medicaid.beneficiaries AS bene ON ad.bene_id = bene.bene_id 
         INNER JOIN medicaid.enrollments on enrollments.bene_id = ad.bene_id 
         WHERE ad.year = {year} and enrollments.year = {year}-- want the year patients is admitted and enrolled for accurate zipcode
@@ -160,7 +164,7 @@ def get_diag_vs_all_enroll(year, age_low, age_high, diagnoses):
       
       ON all_zip.zip = diag_zip.zip -- join by zip code. 
       
-      WHERE (diag_count > 10 AND enroll_count > 10) OR (diag_count = 0 AND enroll_count > 10) OR (diag_count > 10 AND enroll_count = 0) OR (diag_count = 0 AND enroll_count = 0)--confidentiality
+--       WHERE (diag_count > 10 AND enroll_count > 10) OR (diag_count = 0 AND enroll_count > 10) OR (diag_count > 10 AND enroll_count = 0) OR (diag_count = 0 AND enroll_count = 0)--confidentiality
     ) AS diag_w_zeros --column alias cannot be used directly in the query 
 -- ORDER BY diag_vs_all_enroll DESC NULLS last ;
 """
@@ -173,7 +177,8 @@ def main():
     # get_psyc_count(2012, 10, 18, psyc_icd)
     # print(get_hosp_admin_count(2012, 10, 16))
     # print(get_diag_vs_all_diag(2008, 10, 16, psyc_icd))
-    print(get_diag_vs_all_enroll(2005, 2, 20, psyc_icd))
+    print(get_diag_vs_all_enroll(2012, 18, 200, psyc_icd))
+
 
 if __name__ == "__main__":
     main()
