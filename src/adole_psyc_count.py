@@ -133,6 +133,10 @@ def get_diag_vs_all_enroll(year, age_low, age_high, diagnoses):
       SELECT  
       coalesce(diag_count, 0) AS diag_final, enroll_count, all_zip.zip -- coalecse replaces all null with 0
       FROM 
+      
+      /*
+      A table that counts the number of beneficiaries by zip code of all beneficiries in a year.
+      */
       (
       SELECT COUNT(bene_id) AS enroll_count, zip  FROM
         (
@@ -140,17 +144,18 @@ def get_diag_vs_all_enroll(year, age_low, age_high, diagnoses):
         INNER JOIN medicaid.beneficiaries AS bene ON enroll.bene_id = bene.bene_id 
         WHERE enroll.year = {year}-- want the year patients is admitted and enrolled for accurate zipcode
           ) AS bene_age -- calculates age
-        WHERE age >= {age_low} and age <= {age_high} --column alias cannot be used directly in the query 
+        WHERE age >= {age_low} and age <= {age_high} -- column alias cannot be used directly in the query 
         GROUP BY zip
       ) AS all_zip -- all enrollments per zipcode
       
+      /*
+      A table that counts the number of beneficiaries by zip code who have certain ICD diagnosis.
+      */ 
       LEFT JOIN (
         SELECT COUNT(bene_id) AS diag_count, zip  FROM
           (
-          
-          /*
-          Even though admission date and dob can be used to calculate the exact age, using YEAR(dob) - YEAR(of interest) for consistency.
-          */
+        
+        /* Even though admission date and dob can be used to calculate the exact age, using YEAR(dob) - YEAR(of interest) for consistency.*/
         SELECT ad.year, ad.bene_id, admission_date, dob, diagnosis, zip, {year} - EXTRACT(YEAR FROM dob) AS age FROM medicaid.admissions AS ad
         INNER JOIN medicaid.beneficiaries AS bene ON ad.bene_id = bene.bene_id 
         INNER JOIN medicaid.enrollments on enrollments.bene_id = ad.bene_id 
@@ -158,15 +163,11 @@ def get_diag_vs_all_enroll(year, age_low, age_high, diagnoses):
           ) AS bene_age -- calculates age
         WHERE age >= {age_low} and age <= {age_high} --column alias cannot be used directly in the query 
         AND diagnosis && '{{{diag_string}}}'
-        
         GROUP BY zip
       ) AS diag_zip -- admissions that have the above diagnoses
       
       ON all_zip.zip = diag_zip.zip -- join by zip code. 
-      
---       WHERE (diag_count > 10 AND enroll_count > 10) OR (diag_count = 0 AND enroll_count > 10) OR (diag_count > 10 AND enroll_count = 0) OR (diag_count = 0 AND enroll_count = 0)--confidentiality
-    ) AS diag_w_zeros --column alias cannot be used directly in the query 
--- ORDER BY diag_vs_all_enroll DESC NULLS last ;
+      ) AS diag_w_zeros -- column alias cannot be used directly in the query 
 """
     return sql_query
 
@@ -177,7 +178,7 @@ def main():
     # get_psyc_count(2012, 10, 18, psyc_icd)
     # print(get_hosp_admin_count(2012, 10, 16))
     # print(get_diag_vs_all_diag(2008, 10, 16, psyc_icd))
-    print(get_diag_vs_all_enroll(2012, 18, 200, psyc_icd))
+    print(get_diag_vs_all_enroll(year=2012, age_low=18, age_high=200, diagnoses=psyc_icd))
 
 
 if __name__ == "__main__":
