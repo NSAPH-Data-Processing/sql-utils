@@ -4,6 +4,7 @@ def get_first_diag_label_time(diag_code):
     generates the sql query needed to find the first diagnosis in hospital admissions.
     Resulting table will be formatted as
     1. bene_id | 2. admission_date | 3. diagnosis | 4. present_diag_code | 5. first_diag_diag_code | 6. first_admission_date
+
     present_diag_code: Boolean, indicates whether the diag_code is reported in the diagnosis of that record.
     first_diag_diag_code: Boolean, indicates whether this is the first time diag_code is reported for this beneficiary.
     first_admission_date: Datetime, representing the first day diag_code is reported for this beneficiary.
