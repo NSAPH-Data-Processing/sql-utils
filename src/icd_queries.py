@@ -172,13 +172,63 @@ def get_diag_vs_all_enroll(year, age_low, age_high, diagnoses):
     return sql_query
 
 
+def get_freq_icd_counts(age_low, age_high):
+    """
+    returns a table containing columns: 1) ICD diagnosis code, 2) counts of that code within the age range
+    :param age_low: lower bound of the population age, inclusive
+    :param age_high: upper bound of the population age, inclusive
+    :return: sql_query: the PostgreSQL statement to pass into the engine
+    """
+    
+    sql_query = f"""
+    SELECT diag, COUNT(diag)  FROM 
+        (SELECT unnest(diagnosis) as diag, year, DATE_PART('year', admission_date) - DATE_PART('year', dob) AS age FROM medicaid.admissions AS ad
+        INNER JOIN medicaid.beneficiaries AS bene ON ad.bene_id = bene.bene_id 
+        )
+        AS all_diag
+        WHERE diag IS NOT NULL AND age >= {age_low} and age <= {age_high}
+        GROUP BY diag
+        ORDER BY COUNT(diag) DESC
+        LIMIT 20;
+    """
+    
+    return sql_query
+
+
+def get_freq_primary_icd_counts(age_low, age_high):
+    """
+    returns a table containing columns: 1) ICD primary diagnosis code, 2) counts of that code within the age range
+    :param age_low: lower bound of the population age, inclusive
+    :param age_high: upper bound of the population age, inclusive
+    :return: sql_query: the PostgreSQL statement to pass into the engine
+    """
+    
+    sql_query = f"""
+        SELECT primary_diag, COUNT(primary_diag)  FROM 
+        (SELECT diagnosis[1] as primary_diag, year, DATE_PART('year', admission_date) - DATE_PART('year', dob) AS age FROM medicaid.admissions AS ad
+        INNER JOIN medicaid.beneficiaries AS bene ON ad.bene_id = bene.bene_id 
+        )
+        AS all_diag
+        WHERE age IS NOT NULL AND age >= {age_low} and age <= {age_high}
+        GROUP BY primary_diag
+        ORDER BY COUNT(primary_diag) DESC
+        LIMIT 20;
+    """
+    
+    return sql_query
+
+
 def main():
-    outcomes = get_outcomes()
-    psyc_icd = outcomes['psychiatric']['icd9']
+#     outcomes = get_outcomes()
+#     psyc_icd = outcomes['psychiatric']['icd9']
+#     print(psyc_icd)
+#     print('type', type(psyc_icd))
+    
+    print(get_freq_primary_icd_counts(0, 18))
     # get_psyc_count(2012, 10, 18, psyc_icd)
     # print(get_hosp_admin_count(2012, 10, 16))
     # print(get_diag_vs_all_diag(2008, 10, 16, psyc_icd))
-    print(get_diag_vs_all_enroll(year=2012, age_low=18, age_high=200, diagnoses=psyc_icd))
+    # print(get_diag_vs_all_enroll(year=2012, age_low=18, age_high=200, diagnoses=psyc_icd))
 
 
 if __name__ == "__main__":
