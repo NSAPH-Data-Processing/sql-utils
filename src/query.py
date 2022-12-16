@@ -30,8 +30,15 @@ from pandas import DataFrame
 
 ######Enter your query here######
 SQL = '''
-SELECT * FROM medicaid.admissions 
-LIMIT 20
+SELECT diag, COUNT(diag)  FROM 
+(SELECT unnest(diagnosis) as diag, year, DATE_PART('year', admission_date) - DATE_PART('year', dob) AS age FROM medicaid.admissions AS ad
+INNER JOIN medicaid.beneficiaries AS bene ON ad.bene_id = bene.bene_id 
+)
+AS all_diag
+WHERE diag IS NOT NULL AND age >= 0 AND age <= 18
+GROUP BY diag
+ORDER BY COUNT(diag) DESC
+LIMIT 20;
 '''
 #################################
 
@@ -55,5 +62,5 @@ def query(db_ini_file: str, db_conn_name: str):
 
 if __name__ == '__main__':
     df_test = query(sys.argv[1], sys.argv[2])
-    df_test.to_csv("sample_query.csv", index=False)
+    df_test.to_csv("all_icd_age_0_18.csv", index=False)
                 
