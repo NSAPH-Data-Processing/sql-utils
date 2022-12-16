@@ -13,6 +13,7 @@ and the following Github repositories
 sql-utils
 data-paltform-internal-docs
 platform-data-quality-test
+point_to_polygon
 ```
 
 The rest of files are byproducts of using the Remote Desktop and RStudio that I didn't want to modify to cause a service breakdown.
@@ -48,6 +49,13 @@ Full path link: `/n/dominici_nsaph_l3/projects/medicaid_children_icd/`
 The main request is to do a frequency count of all the ICD codes in Medicaid through years 1999-2012, frequency count of primary and secondary on all hospitalizations in kids 0-18 year old. Divided into groups 0-12, and 13-18. During a follow-up request, the ICD codes are restricted to between 290 and 319. 
 
 First hospitalization is defined as such that each individual contributes to the count at most once. For example, if interested in ICD codes 290-319, and that Patient A presents ICD-9 290.1 on 1/1/2001, and presents ICD-9 315.0 on 6/15/2001, only the hospitalization on 1/1/2001 will be counted; even though on 6/15/2001, it was Patient A's first hospitalization for 315.0.
+
+Another request for the data was that on the individual level, extract all beneficiaries with ICD codes of interest, and classify whether the diagnosis is one of the five diseases 
+- Major depressive disorder 
+- Anxiety 
+- Disturbance of emotions specific to childhood 
+- Adolescence and adjustment reaction
+- Disturbance of conduct 
 
 You can find more details in `medicaid-children-first-hospitalzation`, which is a git repo hosted at: https://github.com/NSAPH-Data-Processing/medicaid-children-first-hospitalzation
 
@@ -85,5 +93,10 @@ As a concrete example, we should expect every record of every year have a positi
 > This is an on going issue where years 2003 - 2006 have negative admission lengths. https://github.com/NSAPH-Data-Platform/platform-data-quality-test/issues/3
 
 Sometimes it may be challenging to see issues with the data directly. Perhaps visualization will be helpful. We created a folder `notebooks` that contains data both in tabular and in graphic form. 
+
+## point_to_polygon
+Github: https://github.com/NSAPH-Data-Processing/point_to_polygon
+
+This project unfortunately was not finished by the time of my appointment. The main idea is to convert the Koppen-Geiger climate types into regions of the United States. My approach is to use exisiting county zipcodes that are already mapped to climate types, and map zipcodes to FIPS. In the NSAPH database, a schema `NSAPH2.public.hud_zip2fips` translates county zipcodes and FIPS. The only thing left should be a left join between the two CSVs files to crosswalk between zipcodes and FIPS, while keeping a separate file for missed zipcodes.
 
 
